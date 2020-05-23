@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS Lambda handler for processing CSV into JSON files
+Resources:
+  Csv2JsonApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Csv2Json Api Gateway
+      StageName: v1
+      BinaryMediaTypes:
+        - multipart~1form-data
+
+  csv2JsonFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: csv2JsonFunction
+      CodeUri: .
+      Handler: labmda.csv2json.handler.Csv2JsonHandler::handleRequest
+      Role: arn:aws:iam::477696278523:role/LambdaExecuter
+      Runtime: java8
+      MemorySize: 512
+      Events:
+        Csv2Json:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Csv2JsonApiGateway
+            Path: /csv2json
+            Method: POST
